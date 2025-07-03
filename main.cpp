@@ -8,6 +8,17 @@
 #include <iostream>
 #include <cmath>
 
+float camX = 0.0f;
+float camY = 10.0f;
+float camZ = 25.0f;
+
+float camDirX = 0.0f;
+float camDirY = 0.0f;
+float camDirZ = -1.0f;
+
+float rightX = -camDirZ;
+float rightZ = camDirX;
+
 
 struct Sphere{
     float radius, distance, orbit_vel, rotation_vel;
@@ -71,6 +82,39 @@ void drawSphere(Sphere s, float time){
     glPopMatrix();
 }
 
+void keyboardInput(GLFWwindow* window){
+    float speed = 3.0f;
+
+    if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS){
+        camX += camDirX * speed;
+        camY += camDirY * speed;
+        camZ += camDirZ * speed;
+    }
+
+    if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS){
+        camX -= camDirX * speed;
+        camY -= camDirY * speed;
+        camZ -= camDirZ * speed;
+    }
+
+    if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS){
+        camX += rightX * speed;
+        camZ += rightZ * speed;
+    }
+
+    if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS){
+        camX -= rightX * speed;
+        camZ -= rightZ * speed;
+    }
+
+    if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS){
+        camY += speed;
+    }
+
+    if(glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS){
+        camY -= speed;
+    }
+}
 
 int main(){
     int argc = 1;
@@ -119,7 +163,9 @@ int main(){
 
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
-        gluLookAt(0, 10, 25, 0, 0, 0, 0, 1, 0);
+        gluLookAt(camX, camY, camZ, camX + camDirX, camY + camDirY, camZ + camDirZ, 0.0f, 1.0f, 0.0f);
+
+        keyboardInput(window);
 
         float time = glfwGetTime();
 
