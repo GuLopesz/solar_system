@@ -19,6 +19,8 @@ float camDirZ = -1.0f;
 float rightX = -camDirZ;
 float rightZ = camDirX;
 
+float zoomLvl = 45.0f;
+
 
 struct Sphere{
     float radius, distance, orbit_vel, rotation_vel;
@@ -68,10 +70,9 @@ void drawSphere(Sphere s, float time){
         float orbit_angle = time * s.orbit_vel;
         glRotatef(orbit_angle, 0, 1, 0);
         glTranslatef(s.distance, 0, 0);
-
+        glRotatef(90.0f, 1, 0, 0);
         float rotation_angle = time * s.rotation_vel;
-        glRotatef(rotation_angle, 0, 1, 0);
-
+        glRotatef(rotation_angle, 0, 0, 1);
         glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, s.texture);
         GLUquadric* sphere = gluNewQuadric();
@@ -116,6 +117,10 @@ void keyboardInput(GLFWwindow* window){
     }
 }
 
+void scrollZoom(GLFWwindow* window, double xOffset, double yOffset){
+    zoomLvl -= (float)yOffset;
+}
+
 int main(){
     int argc = 1;
     char* argv[1] = {(char*)"App"};
@@ -133,6 +138,8 @@ int main(){
     glfwMakeContextCurrent(window);
     glewInit();
     glEnable(GL_DEPTH_TEST);
+
+    glfwSetScrollCallback(window, scrollZoom);
 
     Sphere sun = {2.0f, 0.0f, 0.0f, 0.0f};
     Sphere mercury = {0.2f, 4.0f, 47.4f, 10.0f};
@@ -159,7 +166,7 @@ int main(){
 
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-        gluPerspective(45.0, 800.0/600.0, 0.1, 100.0);
+        gluPerspective(zoomLvl, 800.0/600.0, 0.1, 100.0);
 
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
